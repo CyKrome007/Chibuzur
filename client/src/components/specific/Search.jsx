@@ -1,25 +1,49 @@
-import {Dialog, DialogTitle, InputAdornment, List, ListItem, ListItemText, Stack, TextField} from "@mui/material";
-import {useInputValidation} from "6pp";
-import {Search as SearchIcon} from "@mui/icons-material";
+import { Dialog, DialogTitle, InputAdornment, List, Stack, TextField } from "@mui/material";
+import { useInputValidation } from "6pp";
+import { Search as SearchIcon } from "@mui/icons-material";
 import UserItem from "../shared/UserItem.jsx";
-import {useState} from "react";
-import {sampleUsers} from "../../constants/sampleData.js";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsSearch } from "../../redux/reducers/misc.js";
+import { useLazySearchUserQuery, useSendFriendRequestMutation } from "../../redux/api/api.js";
+import toast from "react-hot-toast";
+import { useAsyncMutation } from "../../hooks/hook.jsx";
 
 const Search = () => {
 
+    const dispatch = useDispatch()
+    const { isSearch } = useSelector((state) => state['misc']);
+
+    const [searchUser] = useLazySearchUserQuery();
+    const [sendFriendRequest, isLoadingSendFriendRequest, ] = useAsyncMutation(useSendFriendRequestMutation);
+
     const search = useInputValidation('');
 
-    let isLoadingSendFriendRequest = false;
+    const [users,setUsers] = useState([]);
 
-    const [users,setUsers] = useState(sampleUsers);
-
-    const addFriendHandler = (id) => {
-        console.log(id);
+    const addFriendHandler = async (id) => {
+        await sendFriendRequest('Sending Friend Request....', {
+            userId: id,
+        });
     }
+
+    useEffect(() => {
+        const timeOutId = setTimeout(() => {
+            if(search.value !== '')
+                searchUser(search.value)
+                    .then(({data}) => setUsers(data.users))
+                    .catch(err => console.log(err));
+        }, 1000);
+
+        return () => {
+            clearTimeout(timeOutId);
+        };
+
+    }, [search.value]);
 
     return (
         <>
-            <Dialog open>
+            <Dialog open={isSearch} onClose={() => dispatch(setIsSearch(false))}>
                 <Stack direction="column" width={'25rem'} p={'2rem'}>
                     <DialogTitle textAlign="center">Find People</DialogTitle>
                     <TextField
@@ -38,7 +62,7 @@ const Search = () => {
                     />
                     <List>
                         {
-                            users.map((user) => (
+                            users?.map((user) => (
                                 <UserItem
                                     user={user}
                                     key={user._id}

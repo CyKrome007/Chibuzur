@@ -1,9 +1,9 @@
 import AdminLayout from "../../components/layout/AdminLayout.jsx";
-import {Avatar, Box, Stack} from "@mui/material";
+import { Avatar, Box, Stack } from "@mui/material";
 import Table from "../../components/shared/Table.jsx";
-import {useEffect, useState} from "react";
-import {dashboardData} from "../../constants/sampleData.js";
-import {fileFormat, transformImage} from "../../lib/features.js";
+import { useEffect, useState } from "react";
+import { dashboardData } from "../../constants/sampleData.js";
+import { fileFormat, transformImage } from "../../lib/features.js";
 import moment from "moment";
 import RenderAttachment from "../../components/shared/RenderAttachment.jsx";
 
@@ -21,7 +21,7 @@ const columns = [
         width: 200,
         renderCell: (params) => {
 
-            const {attachments} = params.row;
+            const { attachments } = params.row;
 
             return attachments?.length > 0 ? attachments.map(i => {
 

@@ -5,26 +5,91 @@ import {VisuallyHiddenInput} from "../components/styles/StyledComponents.js";
 import {useFileHandler, useInputValidation} from "6pp";
 import {usernameValidator} from "../utils/validators.js";
 import {bgGradient} from "../constants/color.js";
+import axios from "axios";
+import {server} from "../constants/config.js";
+import {useDispatch} from "react-redux";
+import {userExists} from "../redux/reducers/auth.js";
+import toast from "react-hot-toast";
 
 const Login = () => {
 
     const [isLogin, setIsLogin] = useState(true);
+    const [isLoginLoading, setIsLoginLoading] = useState(false);
 
     const toggleLogin = () => setIsLogin(prev => !prev);
 
     const name = useInputValidation("");
     const bio = useInputValidation("");
     const username = useInputValidation("", usernameValidator);
-    const password = useInputValidation();
+    const password = useInputValidation('');
 
     const avatar = useFileHandler('single', 5);
 
-    const handleLogin = (e) => {
+    const dispatch = useDispatch();
+
+    const handleLogin = async (e) => {
         e.preventDefault();
+        setIsLoginLoading(true);
+        const toastId = toast.loading('Logging in..');
+
+        const config = {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        try {
+            const { data } = await axios.post(
+                `${server}/user/login`,
+                {
+                    username: username.value,
+                    password: password.value,
+                },
+                config
+            );
+            dispatch(userExists(data?.user || true));
+            toast.success(data?.message || 'Login Success', {id: toastId});
+            // console.log(data.message || 'Login Success');
+        } catch (e) {
+            toast.error(e?.response?.data?.message || 'Something Went Wrong', {id: toastId});
+            setIsLoginLoading(false);
+            // console.log(e?.response?.data?.message || 'Something Went Wrong');
+        }
+
     }
 
-    const handleSignUp = (e) => {
+    const handleSignUp = async (e) => {
         e.preventDefault();
+
+        setIsLoginLoading(true);
+        const toastId = toast.loading('Creating Your Identity');
+
+        const formData = new FormData();
+        formData.append("avatar", avatar.file);
+        formData.append("name", name.value);
+        formData.append('bio', bio.value);
+        formData.append("username", username.value);
+        formData.append('password', password.value);
+
+        const config = {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        };
+
+        try{
+            const { data } = await axios.post(
+                `${server}/user/register`,
+                formData,
+                config
+            );
+            dispatch(userExists(data?.user || true));
+            toast.success(data?.message || 'Register Success', { id: toastId });
+        } catch (e) {
+            toast.error(e?.response?.data?.message || 'Something Went Wrong', { id: toastId });
+        }
     }
 
     return (
@@ -93,16 +158,18 @@ const Login = () => {
                                         variant="contained"
                                         color='primary'
                                         type={'submit'}
+                                        disabled={isLoginLoading}
                                     >
                                         Login
                                     </Button>
 
-                                    <Typography textAlign={'center'} m={'1rem'}>OR</Typography>
+                                    <Typography textAlign='center' m={'1rem'}>OR</Typography>
 
                                     <Button
                                         fullWidth
                                         variant="text"
                                         onClick={toggleLogin}
+                                        disabled={isLoginLoading}
                                     >
                                         Signup Instead
                                     </Button>
@@ -215,16 +282,18 @@ const Login = () => {
                                         variant="contained"
                                         color='primary'
                                         type={'submit'}
+                                        disabled={isLoginLoading}
                                     >
                                         Signup
                                     </Button>
 
-                                    <Typography textAlign={'center'} m={'1rem'}>OR</Typography>
+                                    <Typography textAlign='center' m={'1rem'}>OR</Typography>
 
                                     <Button
                                         fullWidth
                                         variant="text"
                                         onClick={toggleLogin}
+                                        disabled={isLoginLoading}
                                     >
                                         Login Instead
                                     </Button>

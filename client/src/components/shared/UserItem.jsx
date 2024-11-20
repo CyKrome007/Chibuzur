@@ -1,6 +1,7 @@
 import { memo } from "react";
-import {Avatar, IconButton, ListItem, Stack, Typography} from "@mui/material";
-import {Add as AddIcon, Remove as RemoveIcon} from "@mui/icons-material";
+import { Avatar, IconButton, ListItem, Stack, Typography } from "@mui/material";
+import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
+import { motion } from "framer-motion";
 
 const UserItem = ({
     user,
@@ -8,12 +9,16 @@ const UserItem = ({
     handlerIsLoading,
     isAdded = false,
     styling = {}
-                  }) => {
+}) => {
 
-    const {name, _id, avatar} = user
+    // eslint-disable-next-line react/prop-types
+    const {name, _id, avatar} = user;
 
     return (
-        <>
+        <motion.div
+            initial={{ opacity: 0, y: '-100%' }}
+            whileInView={{ opacity: 1, y: '0' }}
+        >
             <ListItem>
                 <Stack
                     direction='row'
@@ -22,7 +27,10 @@ const UserItem = ({
                     width={'100%'}
                     {...styling}
                 >
-                    <Avatar />
+                    <motion.div>
+
+                    </motion.div>
+                    <Avatar src={avatar} />
                     <Typography
                         variant='body1'
                         sx={{
@@ -57,7 +65,7 @@ const UserItem = ({
                     </IconButton>
                 </Stack>
             </ListItem>
-        </>
+        </motion.div>
     )
 }
 

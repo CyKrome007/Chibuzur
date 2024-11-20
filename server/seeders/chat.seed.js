@@ -79,7 +79,7 @@ const createMessages = async (numMessages) => {
 
         for (let i = 0; i < numMessages; i++) {
             const randomUser = users[Math.floor(Math.random() * users.length)];
-            const randomChat = users[Math.floor(Math.random() * users.length)];
+            const randomChat = chats[Math.floor(Math.random() * users.length)];
 
             messagesPromise.push(
                 Message.create({

@@ -1,17 +1,28 @@
-import { Avatar, Button, Dialog, DialogTitle, ListItem, Stack, Typography } from "@mui/material";
-import { sampleNotifications } from "../../constants/sampleData.js";
-import { memo } from "react";
-import {transformImage} from "../../lib/features.js";
+import { Avatar, Button, Dialog, DialogTitle, ListItem, Skeleton, Stack, Typography } from "@mui/material";
+import { memo, useState } from "react";
+import { transformImage } from "../../lib/features.js";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsNotification } from "../../redux/reducers/misc.js";
+import { useAcceptFriendRequestMutation, useGetNotificationsQuery } from "../../redux/api/api.js";
+import {useAsyncMutation, useErrors} from "../../hooks/hook.jsx";
+import toast from "react-hot-toast";
 
 const Notifications = () => {
 
-    const friendRequestHandler = ({ _id, accept }) => {
-        console.log('Friend Request Handler');
+    const dispatch = useDispatch();
+    const { isNotification } = useSelector((state) => state.misc);
+    const { isLoading, data, isError, error } = useGetNotificationsQuery();
+    const [acceptRequest] = useAsyncMutation(useAcceptFriendRequestMutation);
+
+    useErrors([{isError, error}]);
+
+    const friendRequestHandler = async ({ _id, accept }) => {
+        await acceptRequest('Processing your request..', { requestId: _id, accept })
     }
 
     return (
         <>
-            <Dialog open>
+            <Dialog open={isNotification} onClose={() => dispatch(setIsNotification(false))}>
                 <Stack
                     p={{
                         xs: '1rem',
@@ -19,20 +30,25 @@ const Notifications = () => {
                     }}
                     maxWidth={'25rem'}
                 >
+
                     <DialogTitle title='Notifications'>Notifications</DialogTitle>
                     {
-                        sampleNotifications.length > 0 ? (
-                            sampleNotifications.map(
-                                (notification) =>
-                                    <NotificationItem
-                                        sender={notification.sender}
-                                        _id={notification._id}
-                                        key={notification._id}
-                                        handler={friendRequestHandler}
-                                    />
-                            )
+                        isLoading ? (
+                            <Skeleton />
                         ) : (
-                            <Typography textAlign='center'>No Notifications</Typography>
+                            data?.Request.length > 0 ? (
+                                data?.Request.map(
+                                    (notification) =>
+                                        <NotificationItem
+                                            sender={notification.sender}
+                                            _id={notification._id}
+                                            key={notification._id}
+                                            handler={friendRequestHandler}
+                                        />
+                                )
+                            ) : (
+                                <Typography textAlign='center'>No Notifications</Typography>
+                            )
                         )
                     }
                 </Stack>
@@ -43,11 +59,22 @@ const Notifications = () => {
 
 const NotificationItem = memo(({ sender, _id, handler }) => {
 
-    const {name, avatar} = sender
+    // eslint-disable-next-line react/prop-types
+    const { name, avatar } = sender
+    const [display, setDisplay] = useState(true);
+
+    const handleClick = (args) => {
+        setDisplay(false);
+        handler(args);
+    };
 
     return(
         <>
-            <ListItem>
+            <ListItem
+                sx={{
+                    display: `${display ? 'block' : 'none'}`,
+                }}
+            >
                 <Stack
                     direction='column'
                     alignItems={'center'}
@@ -75,8 +102,8 @@ const NotificationItem = memo(({ sender, _id, handler }) => {
                     <Stack
                         direction={'row'}
                     >
-                        <Button onClick={() => handler({ _id, accept: true})}>Accept</Button>
-                        <Button onClick={() => handler({ _id, accept: false})} color={'error'}>Reject</Button>
+                        <Button onClick={() => handleClick({ _id, accept: true})}>Accept</Button>
+                        <Button onClick={() => handleClick({ _id, accept: false})} color='error'>Reject</Button>
                     </Stack>
                 </Stack>
             </ListItem>

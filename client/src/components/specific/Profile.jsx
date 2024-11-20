@@ -1,11 +1,16 @@
-import {Avatar, Stack, Typography} from "@mui/material";
+import {Avatar, Skeleton, Stack, Typography} from "@mui/material";
 import {Face as FaceIcon, AlternateEmail as UsernameIcon, CalendarMonth as CalendarIcon} from "@mui/icons-material";
 import moment from "moment";
+import { transformImage } from "../../lib/features.js";
+import { useSelector } from "react-redux";
 
 export const Profile = () => {
-    return (
+
+    const { user } = useSelector((state) => state.auth);
+
+    return !user ? <Skeleton /> : (
         <>
-            <Stack spacing={'2rem'} direction={'column'} alignItems={'center'}>
+            <Stack spacing={'2rem'} direction='column' alignItems={'center'}>
                 <Avatar
                     sx={{
                         width: 200,
@@ -14,11 +19,12 @@ export const Profile = () => {
                         marginBottom: '1rem',
                         border: '5px solid white'
                     }}
+                    src={transformImage(user?.avatar?.url)}
                 />
-                <ProfileCard heading={'Name'} text={'Hafizun Nisha'} Icon={<FaceIcon />} />
-                <ProfileCard heading={'Username'} text={'sayed.hafizun'} Icon={<UsernameIcon />} />
-                <ProfileCard heading={'Bio'} text={'Hafizun is the best person in the whole world. I Love you'} />
-                <ProfileCard heading={'Joined'} text={moment('2023-11-04T18:30:00.000Z').fromNow()} Icon={<CalendarIcon />} />
+                <ProfileCard heading={'Name'} text={user?.name} Icon={<FaceIcon />} />
+                <ProfileCard heading={'Username'} text={user?.username} Icon={<UsernameIcon />} />
+                <ProfileCard heading={'Bio'} text={user?.bio} />
+                <ProfileCard heading={'Joined'} text={moment(user?.createdAt).fromNow()} Icon={<CalendarIcon />} />
             </Stack>
         </>
     )

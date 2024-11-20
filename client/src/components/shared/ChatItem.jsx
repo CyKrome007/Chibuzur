@@ -1,20 +1,22 @@
-import {Box, Stack, Typography} from "@mui/material";
-import {Link} from "../styles/StyledComponents.js";
-import {memo} from "react";
-import {AvatarCard} from "./AvatarCard.jsx";
+import { Box, Stack, Typography } from "@mui/material";
+import { Link } from "../styles/StyledComponents.js";
+import { memo } from "react";
+import { AvatarCard } from "./AvatarCard.jsx";
+import { motion } from "framer-motion";
 
 export const ChatItem = ({
     avatar=[],
     name,
     _id,
     LastMessage,
-    groupChat=false,
+    groupChat= false,
     sameSender,
     isOnline,
     newMessageAlert,
     index = 0,
     handleDeleteChat,
                          }) => {
+    console.log(index);
     return (
         <>
             <Link
@@ -24,22 +26,29 @@ export const ChatItem = ({
                     padding: '0rem',
                 }}
             >
-                <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "1rem",
-                    backgroundColor: sameSender ? 'black' : 'unset',
-                    color: sameSender ? 'white' : 'unset',
-                    gap: '1rem',
-                    position: 'relative'
-                }}>
+                <motion.div
+                    initial={{ opacity: 0, y: '100%' }}
+                    whileInView={{ opacity: 1, y: '0' }}
+                    transition={{ delay: index * 0.1 }}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "1rem",
+                        backgroundColor: sameSender ? 'black' : 'unset',
+                        color: sameSender ? 'white' : 'unset',
+                        gap: '1rem',
+                        position: 'relative'
+                    }}
+                >
                     <AvatarCard avatar={avatar}/>
                     <Stack >
                         <Typography>{name}</Typography>
                         {
                             newMessageAlert && (
-                                // eslint-disable-next-line react/prop-types
-                                <Typography>{newMessageAlert.count} New Message(s)</Typography>
+                                <Typography>
+                                    {/* eslint-disable-next-line react/prop-types */}
+                                    {newMessageAlert?.count === 1 ? '1 New Message' : `${newMessageAlert?.count} New Messages`}
+                                </Typography>
                             )
                         }
                     </Stack>
@@ -59,7 +68,7 @@ export const ChatItem = ({
                             />
                         )
                     }
-                </div>
+                </motion.div>
             </Link>
         </>
     );

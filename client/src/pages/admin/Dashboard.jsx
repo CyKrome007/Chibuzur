@@ -1,5 +1,5 @@
 import AdminLayout from "../../components/layout/AdminLayout.jsx";
-import {Box, Container, Paper, Stack, Typography} from "@mui/material";
+import { Box, Container, Paper, Stack, Typography } from "@mui/material";
 import {
     AdminPanelSettings as AdminPanelSettingsIcon,
     Group as GroupIcon,
@@ -8,9 +8,9 @@ import {
     Person as PersonIcon,
 } from "@mui/icons-material";
 import moment from "moment";
-import {CurveButton, SearchField} from "../../components/styles/StyledComponents.js";
-import {matteBlack} from "../../constants/color.js";
-import {DoughnutChart, LineChart} from "../../components/specific/Charts.jsx";
+import { CurveButton, SearchField } from "../../components/styles/StyledComponents.js";
+import { matteBlack } from "../../constants/color.js";
+import { DoughnutChart, LineChart } from "../../components/specific/Charts.jsx";
 
 const Dashboard = () => {
 

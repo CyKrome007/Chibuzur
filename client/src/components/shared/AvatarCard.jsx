@@ -16,10 +16,10 @@ export const AvatarCard = ({
                 >
                     <Box width={'3rem'} height={'3rem'}>
                         {
-                            avatar.map((avatar, index) => (
+                            avatar.map((a, index) => (
                                 <Avatar
                                     key={Math.random() * 100}
-                                    src={transformImage(avatar)}
+                                    src={transformImage(a.url)}
                                     alt={`Avatar ${index}`}
                                     style={{
                                         width: '3rem',

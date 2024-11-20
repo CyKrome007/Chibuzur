@@ -1,17 +1,32 @@
-import {bgGradient} from "../../constants/color.js";
-import {Button, Container, Paper, TextField, Typography} from "@mui/material";
-import {useInputValidation} from "6pp";
-import {Navigate} from "react-router-dom";
+import { bgGradient } from "../../constants/color.js";
+import { Button, Container, Paper, TextField, Typography } from "@mui/material";
+import { useInputValidation } from "6pp";
+import { Navigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useAdminLoginMutation } from "../../redux/api/api.js";
+import { useAsyncMutation } from "../../hooks/hook.jsx";
+import { adminExists } from "../../redux/reducers/auth.js";
 
 const AdminLogin = () => {
-    
+
+    const dispatch = useDispatch();
+
     const secretKey = useInputValidation('');
 
-    const isAdmin = true;
+    const { isAdmin } = useSelector((state) => state['auth']);
+
+    const [adminLogin, isAdminLoginLoading, data] = useAsyncMutation(useAdminLoginMutation);
+
+    useEffect(() => {
+        console.log(data);
+        if(data?.success)
+            dispatch(adminExists(true));
+    }, [data, dispatch]);
 
     const submitHandler = (e) => {
         e.preventDefault();
-        console.log('submit');
+        adminLogin('Verifying Your Secret...', { secretKey: secretKey.value });
     };
 
     if(isAdmin) return <Navigate to="/admin/dashboard" />;
@@ -63,6 +78,7 @@ const AdminLogin = () => {
                                 variant="contained"
                                 color='primary'
                                 type={'submit'}
+                                disabled={isAdminLoginLoading}
                             >
                                 Login
                             </Button>

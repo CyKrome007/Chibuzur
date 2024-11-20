@@ -1,21 +1,28 @@
-import {memo} from "react";
-import {Box, Typography} from "@mui/material";
-import {lightBlue} from "../../constants/color.js";
+import { memo } from "react";
+import { Box, Typography } from "@mui/material";
+import { lightBlue } from "../../constants/color.js";
 import moment from "moment";
-import {fileFormat} from "../../lib/features.js";
+import { fileFormat } from "../../lib/features.js";
 import RenderAttachment from "./RenderAttachment.jsx";
+import { motion } from "framer-motion";
 
-const MessageComponent = ({ message, user }) => {
+// eslint-disable-next-line react/prop-types
+const MessageComponent = ({ message, user, index }) => {
 
-    const {sender, content, attachments = [], createdAt} = message;
+    // eslint-disable-next-line react/prop-types
+    const { sender, content, attachments = [], createdAt } = message;
 
+    // eslint-disable-next-line react/prop-types
     const sameSender = sender?._id === user._id;
 
     const timeAgo = moment(createdAt).fromNow()
 
     return (
         <>
-            <div
+            <motion.div
+                initial={{ opacity: 0, x: `${sameSender ? '100%' : '-100%'}` }}
+                whileInView={{ opacity: 1, x: '0' }}
+                transition={{ delay: index * 0.1 }}
                 style={{
                     alignSelf: sameSender ? 'flex-end' : 'flex-start',
                     backgroundColor: 'white',
@@ -64,7 +71,7 @@ const MessageComponent = ({ message, user }) => {
 
                 <Typography variant='caption' color={'text.secondary'}>{timeAgo}</Typography>
 
-            </div>
+            </motion.div>
         </>
     )
 }

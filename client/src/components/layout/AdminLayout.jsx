@@ -1,9 +1,17 @@
-import {Box, Drawer, Grid, IconButton, Stack, styled, Typography} from "@mui/material";
-import {gray, matteBlack} from "../../constants/color.js";
-import {Menu as MenuIcon, Close as CloseIcon, ExitToApp as ExitToAppIcon} from "@mui/icons-material";
-import {useState} from "react";
-import {useLocation, Link as LinkComponent, Navigate} from "react-router-dom";
-import {adminTabs} from "../../constants/route.jsx";
+import { Box, Drawer, Grid2, IconButton, Stack, styled, Typography } from "@mui/material";
+import { gray, matteBlack } from "../../constants/color.js";
+import {
+    Menu as MenuIcon,
+    Close as CloseIcon,
+    ExitToApp as ExitToAppIcon
+} from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { useLocation, Link as LinkComponent, Navigate, useNavigate } from "react-router-dom";
+import { adminTabs } from "../../constants/route.jsx";
+import { adminExists } from "../../redux/reducers/auth.js";
+import { useAsyncMutation } from "../../hooks/hook.jsx";
+import { useAdminLogoutMutation } from "../../redux/api/api.js";
+import { useDispatch } from "react-redux";
 
 const Link = styled(LinkComponent)`
     text-decoration: none;
@@ -18,8 +26,20 @@ const Link = styled(LinkComponent)`
 const Sidebar = ({ w = '100%' }) => {
 
     const location = useLocation();
+    const dispatch = useDispatch();
+    const navigate = useNavigate()
+
+    const [adminLogout, isAdminLogoutLoading, data] = useAsyncMutation(useAdminLogoutMutation);
+
+    useEffect(() => {
+        if(data?.success) {
+            dispatch(adminExists(false));
+            navigate('/admin');
+        }
+    }, [data, navigate, dispatch]);
 
     const logoutHandler = () => {
+        adminLogout('Logging out...');
         console.log('logout')
     }
 
@@ -60,9 +80,7 @@ const Sidebar = ({ w = '100%' }) => {
                             </Link>
                         ))
                     }
-                    <Link
-                        onClick={logoutHandler}
-                    >
+                    <Link onClick={logoutHandler}>
                         <Stack direction='row' alignItems={'center'} spacing={'1rem'}>
                             <ExitToAppIcon />
                             <Typography>Logout</Typography>
@@ -76,9 +94,7 @@ const Sidebar = ({ w = '100%' }) => {
 
 const isAdmin = true;
 
-const AdminLayout = ({
-    children,
-                     }) => {
+const AdminLayout = ({ children }) => {
 
     const [isMobile, setIsMobile] = useState(false);
 
@@ -90,7 +106,7 @@ const AdminLayout = ({
 
     return (
         <>
-            <Grid container minHeight={'100vh'}>
+            <Grid2 container minHeight={'100vh'}>
 
                 <Box
                     sx={{
@@ -110,10 +126,8 @@ const AdminLayout = ({
                     </IconButton>
                 </Box>
 
-                <Grid
-                    item
-                    md={4}
-                    lg={3}
+                <Grid2 size={{ md: 4, lg: 3 }}
+
                     sx={{
                         display: {
                             xs: 'none',
@@ -122,25 +136,22 @@ const AdminLayout = ({
                     }}
                 >
                     <Sidebar />
-                </Grid>
+                </Grid2>
 
-                <Grid
-                    item
-                    xs={12}
-                    md={8}
-                    lg={9}
+                <Grid2
+                    size={{ xs: 12, md: 8, lg: 9 }}
                     sx={{
                         bgcolor: gray
                     }}
                 >
                     {children}
-                </Grid>
+                </Grid2>
 
                 <Drawer open={isMobile} onClose={handleClose}>
                     <Sidebar w={'80vw'} />
                 </Drawer>
 
-            </Grid>
+            </Grid2>
         </>
     )
 }

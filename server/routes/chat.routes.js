@@ -3,7 +3,7 @@ import {isAuthenticated} from "../middlewares/auth.js";
 import {
     addMembers, deleteChat,
     getChatDetails, getMessages,
-    getMyChats,
+    getMyChats, getMyGroups,
     leaveGroup,
     newGroup,
     removeMember, renameGroup,
@@ -16,6 +16,7 @@ import {
     removeMemberValidator, renameGroupValidator, sendAttachmentsValidator,
     validateHandler
 } from "../lib/validators.js";
+import {validate} from "uuid";
 
 const app = express.Router();
 
@@ -25,11 +26,11 @@ app.post('/new', newGroupValidator(), validateHandler, newGroup);
 
 app.get('/my', getMyChats);
 
-app.get('/my/groups', getMyChats);
+app.get('/my/groups', getMyGroups);
 
 app.put('/addMembers', addMemberValidator(), validateHandler, addMembers);
 
-app.delete('/removeMembers', removeMemberValidator(), validateHandler, removeMember);
+app.delete('/removeMember', removeMemberValidator(), validateHandler, removeMember);
 
 app.delete('/leave/:id', chatIdValidator(), validateHandler, leaveGroup);
 
