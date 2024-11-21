@@ -1,5 +1,5 @@
-import {Stack} from "@mui/material";
-import {ChatItem} from "../shared/ChatItem.jsx";
+import { Stack } from "@mui/material";
+import { ChatItem } from "../shared/ChatItem.jsx";
 
 const ChatList = ({
                       w='100%',

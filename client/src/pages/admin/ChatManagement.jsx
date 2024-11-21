@@ -1,23 +1,28 @@
 import AdminLayout from "../../components/layout/AdminLayout.jsx";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import Table from "../../components/shared/Table.jsx";
-import {Avatar, Stack} from "@mui/material";
-import {dashboardData} from "../../constants/sampleData.js";
-import {transformImage} from "../../lib/features.js";
-import {AvatarCard} from "../../components/shared/AvatarCard.jsx";
+import { Avatar, Stack } from "@mui/material";
+import { transformImage } from "../../lib/features.js";
+import { AvatarCard } from "../../components/shared/AvatarCard.jsx";
+import { useFetchData } from "6pp";
+import { server } from "../../constants/config.js";
+import { useErrors } from "../../hooks/hook.jsx";
+import { LayoutLoader } from "../../components/layout/Loaders.jsx";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
     {
         field: 'id',
         headerName: 'ID',
         headerClassName: 'table-header',
-        width: 50,
+        width: 200,
     },
     {
         field: 'avatar',
         headerName: 'Avatar',
         headerClassName: 'table-header',
-        width: 150,
+        width: 100,
         renderCell: (params) => <AvatarCard avatar={params.row.avatar}/>,
     },
     {
@@ -25,6 +30,12 @@ const columns = [
         headerName: 'Name',
         headerClassName: 'table-header',
         width: 300,
+    },
+    {
+        field: 'groupChat',
+        headerName: 'Group Chat',
+        headerClassName: 'table-header',
+        width: 100,
     },
     {
         field: 'totalMembers',
@@ -45,7 +56,7 @@ const columns = [
         field: 'totalMessages',
         headerName: 'Total Messages',
         headerClassName: 'table-header',
-        width: 200,
+        width: 150,
     },
     {
         field: 'creator',
@@ -63,28 +74,64 @@ const columns = [
 
 const ChatManagement = () => {
 
+    const { isAdmin } = useSelector(state => state.auth);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if(!isAdmin)
+            navigate('/admin');
+    }, [isAdmin, navigate]);
+
+    const { loading, data, error} = useFetchData(
+        `${server}/admin/chats`,
+        'chat-management'
+    );
+
+    const { chats } = data || {};
+
+    useErrors([{ isError: error, error }]);
+
     const [rows, setRows] = useState([]);
 
     useEffect(() => {
-        setRows(
-            dashboardData.chats.map(
-                (chat) => (
-                    {
-                        ...chat,
-                        id: chat._id,
-                        avatar: chat.avatar.map((i) => transformImage(i, 50)),
-                        members: chat.members.map((i) => transformImage(i.avatar, 50)),
-                        creator: {
-                            name: chat.creator.name,
-                            avatar: transformImage(chat.creator.avatar, 50),
-                        },
-                    }
+        if(chats) {
+            setRows(
+                chats?.map(
+                    (chat) => (
+                        {
+                            ...chat,
+                            id: chat._id,
+                            avatar: chat.avatar,
+                            members: chat.members.map((member) => (member.avatar)),
+                            groupChat: chat.groupChat ? 'Yes' : 'No',
+                            creator: {
+                                name: chat.creator.name,
+                                avatar: transformImage(chat.creator.avatar?.url || '', 50),
+                            },
+                        }
+                    )
                 )
-            )
-        );
-    }, []);
+            );
+        }
+            // setRows(
+            //     chats?.map(
+            //         (chat) => (
+            //             {
+            //                 ...chat,
+            //                 id: chat._id,
+            //                 avatar: chat.avatar.map((avatar) => transformImage(avatar.url, 50)),
+            //                 members: chat.members.map((member) => transformImage(member.avatar.url, 50)),
+            //                 creator: {
+            //                     name: chat.creator.name,
+            //                     avatar: transformImage(chat.creator.avatar?.url || '', 50),
+            //                 },
+            //             }
+            //         )
+            //     )
+            // );
+    }, [chats]);
 
-    return (
+    return loading ? <LayoutLoader /> : (
         <>
             <AdminLayout>
                 <Table heading={'All Chats'} columns={columns} rows={rows} />

@@ -1,4 +1,4 @@
-import {Navigate, Outlet} from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 const ProtectRoute = ({ children, user, redirect='/auth' }) => {

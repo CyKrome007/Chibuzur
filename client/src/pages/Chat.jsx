@@ -1,13 +1,13 @@
 import AppLayout from "../components/layout/AppLayout.jsx";
-import {IconButton, Skeleton, Stack} from "@mui/material";
-import {useCallback, useEffect, useRef, useState} from "react";
+import { IconButton, Skeleton, Stack } from "@mui/material";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AttachFile as AttachFileIcon, Send as SendIcon } from "@mui/icons-material";
 import { InputBox } from "../components/styles/StyledComponents.js";
 import { bgGradient, gray, orange } from "../constants/color.js";
 import FileMenu from "../components/dialogs/FileMenu.jsx";
 import MessageComponent from "../components/shared/MessageComponent.jsx";
 import { getSocket } from "../Socket.jsx";
-import {ALERT, NEW_MESSAGE, START_TYPING, STOP_TYPING} from "../constants/events.js";
+import { ALERT, CHAT_JOINED, CHAT_LEFT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from "../constants/events.js";
 import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api.js";
 import { useErrors, useSocketEvents } from "../hooks/hook.jsx";
 import { useInfiniteScrollTop } from "6pp";
@@ -15,7 +15,7 @@ import { setIsFileMenu } from "../redux/reducers/misc.js";
 import { useDispatch } from "react-redux";
 import { removeNewMessagesAlert } from "../redux/reducers/chat.js";
 import { TypingLoader } from "../components/layout/Loaders.jsx";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react-refresh/only-export-components,react/prop-types
 const Chat = ({ chatId, user }) => {
@@ -93,7 +93,8 @@ const Chat = ({ chatId, user }) => {
     };
 
     useEffect(() => {
-
+        // console.log('useEffect memebers', members);
+        socket.emit(CHAT_JOINED, { userId: user?._id, members })
         dispatch(removeNewMessagesAlert(chatId));
 
         return () => {
@@ -101,8 +102,10 @@ const Chat = ({ chatId, user }) => {
             setMessage('');
             setPage(1);
             setOldMessages([]);
+            // console.log('Cleanup members', members);
+            socket.emit(CHAT_LEFT, { userId: user?._id, members })
         }
-    }, [chatId, dispatch, setOldMessages, setPage, setMessages, setMessage]);
+    }, [chatId, dispatch, setOldMessages, setPage, setMessages, setMessage, socket]);
 
     useEffect(() => {
         bottomRef?.current?.scrollIntoView({behavior: "smooth"});

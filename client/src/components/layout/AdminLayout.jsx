@@ -40,7 +40,6 @@ const Sidebar = ({ w = '100%' }) => {
 
     const logoutHandler = () => {
         adminLogout('Logging out...');
-        console.log('logout')
     }
 
     return(

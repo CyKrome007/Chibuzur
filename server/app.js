@@ -8,7 +8,15 @@ import {errorMiddleware} from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import {Server} from "socket.io";
 import {createServer} from 'http';
-import {NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING, STOP_TYPING} from "./constants/events.js";
+import {
+    CHAT_JOINED,
+    CHAT_LEFT,
+    NEW_MESSAGE,
+    NEW_MESSAGE_ALERT,
+    ONLINE_USERS,
+    START_TYPING,
+    STOP_TYPING
+} from "./constants/events.js";
 import {v4 as uuid} from "uuid";
 import {getSockets} from "./lib/helper.js";
 import {Message} from "./models/message.js";
@@ -26,6 +34,7 @@ const port = process.env.PORT || 3000;
 const envMode = process.env.NODE_ENV.trim() || 'PRODUCTION';
 const adminSecretKey = process.env.ADMIN_SECRET_KEY || 'HAZIFUN';
 const userSocketIDs = new Map();
+const onlineUsers = new Set();
 
 connectDB(dbURI);
 
@@ -101,7 +110,7 @@ io.on('connection', (socket) => {
         try {
             await Message.create(messageForDB);
         } catch (err) {
-            console.log(err);
+            throw new Error(err);
         }
     });
 
@@ -115,8 +124,24 @@ io.on('connection', (socket) => {
         socket.to(memberSockets).emit(STOP_TYPING, { chatId });
     });
 
+    socket.on(CHAT_JOINED, ({ members, userId }) => {
+        // console.log("Joined Members", members);
+        onlineUsers.add(userId.toString());
+        const memberSockets = getSockets(members);
+        io.to(memberSockets).emit(ONLINE_USERS, Array.from(onlineUsers));
+    });
+
+    socket.on(CHAT_LEFT, ({ members, userId }) => {
+        // console.log('Left Members', members);
+        onlineUsers.delete(userId.toString());
+        const memberSockets = getSockets(members);
+        io.to(memberSockets).emit(ONLINE_USERS, Array.from(onlineUsers));
+    });
+
     socket.on('disconnect', () => {
         userSocketIDs.delete(user._id.toString());
+        onlineUsers.delete(user._id.toString());
+        socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
     });
 });
 

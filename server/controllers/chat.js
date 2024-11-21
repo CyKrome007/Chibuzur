@@ -47,7 +47,7 @@ const getMyChats = TryCatch(async(req, res) => {
             _id,
             groupChat,
             avatar: groupChat
-                ? members.slice(0, 3).map(({ avatar }) => avatar.url)
+                ? members.slice(0, 3).map(({ avatar }) => avatar)
                 : [otherMember.avatar],
             name: groupChat ? name : otherMember.name,
             members: members.reduce((prev, curr) => {
@@ -79,7 +79,7 @@ const getMyGroups = TryCatch(async (req, res) => {
             _id,
             groupChat,
             name,
-            avatar: members.slice(0, 3).map(({ avatar }) => avatar.url),
+            avatar: members.slice(0, 3).map(({ avatar }) => avatar),
         })
     );
 

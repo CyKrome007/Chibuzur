@@ -19,7 +19,6 @@ const AdminLogin = () => {
     const [adminLogin, isAdminLoginLoading, data] = useAsyncMutation(useAdminLoginMutation);
 
     useEffect(() => {
-        console.log(data);
         if(data?.success)
             dispatch(adminExists(true));
     }, [data, dispatch]);

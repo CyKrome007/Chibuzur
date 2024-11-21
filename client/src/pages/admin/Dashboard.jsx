@@ -11,8 +11,32 @@ import moment from "moment";
 import { CurveButton, SearchField } from "../../components/styles/StyledComponents.js";
 import { matteBlack } from "../../constants/color.js";
 import { DoughnutChart, LineChart } from "../../components/specific/Charts.jsx";
+import { useFetchData } from "6pp";
+import { server } from "../../constants/config.js";
+import { LayoutLoader } from "../../components/layout/Loaders.jsx";
+import { useErrors } from "../../hooks/hook.jsx";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Dashboard = () => {
+
+    const { isAdmin } = useSelector(state => state.auth);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if(!isAdmin)
+            navigate('/admin');
+    }, [isAdmin, navigate]);
+
+    const { loading, data, error, refetch } = useFetchData(
+        `${server}/admin/stats`,
+        'disaboards-stats'
+    );
+
+    const { stats } = data || {};
+
+    useErrors([{ isError: error, error: error }]);
 
     const AppBar = () => {
         return(
@@ -81,14 +105,14 @@ const Dashboard = () => {
                 alignItems={'center'}
                 margin={'2rem 0'}
             >
-                <Widget title={'Users'} value={34} Icon={<PersonIcon /> }/>
-                <Widget title={'Chats'} value={3} Icon={<GroupIcon /> }/>
-                <Widget title={'Messages'} value={345} Icon={<MessageIcon /> }/>
+                <Widget title={'Users'} value={stats?.usersCount || 0} Icon={<PersonIcon /> }/>
+                <Widget title={'Chats'} value={stats?.totalChats || 0} Icon={<GroupIcon /> }/>
+                <Widget title={'Messages'} value={stats?.messagesCount || 0} Icon={<MessageIcon /> }/>
             </Stack>
         </>
     );
 
-    return (
+    return loading ? <LayoutLoader loading={loading} error={error} /> : (
         <>
             <AdminLayout>
                 <Container component={'main'}>
@@ -120,7 +144,7 @@ const Dashboard = () => {
                             <Typography margin={'2rem 0'} variant='h4'>
                                 Last Messages
                             </Typography>
-                            <LineChart value={[1, 22, 3, 50, 5]}/>
+                            <LineChart value={stats?.messagesChart || []}/>
                         </Paper>
                         <Paper
                             elevation={3}
@@ -138,7 +162,10 @@ const Dashboard = () => {
                                 maxWidth: '25rem',
                             }}
                         >
-                            <DoughnutChart labels={['Single Chats', 'Group Chats']} value={[23, 66]} />
+                            <DoughnutChart
+                                labels={['Single Chats', 'Group Chats']}
+                                value={[stats?.totalChats - stats?.groupsCount, stats?.groupsCount || 0]}
+                            />
                             <Stack
                                 position='absolute'
                                 direction='row'
@@ -148,7 +175,7 @@ const Dashboard = () => {
                                 height={'100%'}
                             >
                                 <GroupIcon />
-                                <Typography>Vs </Typography>
+                                <Typography>&nbsp;Vs&nbsp;</Typography>
                                 <PersonIcon />
                             </Stack>
                         </Paper>

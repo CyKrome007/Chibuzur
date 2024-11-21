@@ -1,9 +1,14 @@
 import AdminLayout from "../../components/layout/AdminLayout.jsx";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import Table from "../../components/shared/Table.jsx";
-import {Avatar} from "@mui/material";
-import {dashboardData} from "../../constants/sampleData.js";
-import {transformImage} from "../../lib/features.js";
+import { Avatar } from "@mui/material";
+import { transformImage } from "../../lib/features.js";
+import { useFetchData } from "6pp";
+import { server } from "../../constants/config.js";
+import { useErrors } from "../../hooks/hook.jsx";
+import { LayoutLoader } from "../../components/layout/Loaders.jsx";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
     {
@@ -48,11 +53,28 @@ const columns = [
 
 const UserManagement = () => {
 
+    const { isAdmin } = useSelector(state => state.auth);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if(!isAdmin)
+            navigate('/admin');
+    }, [isAdmin, navigate]);
+
+    const { loading, data, error, refetch } = useFetchData(
+        `${server}/admin/users`,
+        'user-management'
+    );
+
+    const { users } = data || {};
+
+    useErrors([{ isError: error, error}]);
+
     const [rows, setRows] = useState([]);
 
     useEffect(() => {
         setRows(
-            dashboardData.users.map(
+            users?.map(
                 (user) => (
                     {
                         ...user,
@@ -62,9 +84,9 @@ const UserManagement = () => {
                 )
             )
         );
-    }, []);
+    }, [users]);
 
-    return (
+    return loading ? <LayoutLoader /> : (
         <>
             <AdminLayout>
                 <Table heading={'All Users'} columns={columns} rows={rows} />

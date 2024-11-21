@@ -16,7 +16,7 @@ export const ChatItem = ({
     index = 0,
     handleDeleteChat,
                          }) => {
-    console.log(index);
+    // console.log(name, 'is online', isOnline)
     return (
         <>
             <Link

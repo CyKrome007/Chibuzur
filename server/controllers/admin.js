@@ -97,15 +97,15 @@ const allChats = TryCatch(async(req, res) => {
                 name,
                 _id,
                 groupChat,
-                avatar: members.slice(0, 3).map((member) => member.avatar.url),
+                avatar: members.slice(0, 3).map((member) => member.avatar),
                 members: members.map(({_id, name, avatar}) => ({
                     _id,
                     name,
-                    avatar: avatar.url
+                    avatar
                 })),
                 creator: {
                     name: creator?.name || 'None',
-                    avatar: creator?.avatar.url || '',
+                    avatar: creator?.avatar || {},
                 },
                 totalMembers: members.length,
                 totalMessages
@@ -175,6 +175,7 @@ const getDashboardStats = TryCatch(async(req, res) => {
     last7DaysMessages.forEach(message => {
         const index = Math.floor((today.getTime() - message.createdAt.getTime()) / 1000 * 60 * 60 * 24) ;
         messages[6 - index]++;
+        console.log(messages);
     });
 
     const stats = {

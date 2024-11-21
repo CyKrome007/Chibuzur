@@ -1,18 +1,18 @@
 import Header from "./Header.jsx";
 // import Title from "../shared/Title.jsx";
-import {Drawer, Skeleton, Grid2} from "@mui/material";
+import { Drawer, Skeleton, Grid2 } from "@mui/material";
 import ChatList from "../specific/ChatList.jsx";
-import {useNavigate, useParams} from "react-router-dom";
-import {Profile} from "../specific/Profile.jsx";
-import {useMyChatsQuery} from "../../redux/api/api.js";
-import {useDispatch, useSelector} from "react-redux";
-import {setIsDeleteMenu, setIsMobile, setSelectedDeleteChat} from "../../redux/reducers/misc.js";
-import {useErrors, useSocketEvents} from "../../hooks/hook.jsx";
-import {getSocket} from "../../Socket.jsx";
-import {NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS} from "../../constants/events.js";
-import {useCallback, useEffect, useRef} from "react";
-import {incrementNotifications, setNewMessagesAlert} from "../../redux/reducers/chat.js";
-import {getOrSaveFromStorage} from "../../lib/features.js";
+import { useNavigate, useParams } from "react-router-dom";
+import { Profile } from "../specific/Profile.jsx";
+import { useMyChatsQuery } from "../../redux/api/api.js";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsDeleteMenu, setIsMobile, setSelectedDeleteChat } from "../../redux/reducers/misc.js";
+import { useErrors, useSocketEvents } from "../../hooks/hook.jsx";
+import { getSocket } from "../../Socket.jsx";
+import {NEW_MESSAGE_ALERT, NEW_REQUEST, ONLINE_USERS, REFETCH_CHATS} from "../../constants/events.js";
+import {useCallback, useEffect, useRef, useState} from "react";
+import { incrementNotifications, setNewMessagesAlert } from "../../redux/reducers/chat.js";
+import { getOrSaveFromStorage } from "../../lib/features.js";
 import DeleteChatMenu from "../dialogs/DeleteChatMenu.jsx";
 
 const AppLayout = () => (WrappedComponent) => {
@@ -25,8 +25,11 @@ const AppLayout = () => (WrappedComponent) => {
         const dispatch = useDispatch();
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const navigate = useNavigate();
-        const chatId = params.chatId;
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const deleteMenuAnchor = useRef(null);
+
+        const [onlineUsers, setOnlineUsers] = useState([]);
+        const chatId = params.chatId;
 
         const socket = getSocket();
 
@@ -84,10 +87,16 @@ const AppLayout = () => (WrappedComponent) => {
             navigate('/');
         }, [refetch, navigate]);
 
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const onlineUsersListener = useCallback((data) => {
+            setOnlineUsers(data);
+        }, []);
+
         const eventHandlers = {
             [NEW_MESSAGE_ALERT]: newMessageAlertListener,
             [NEW_REQUEST]: newRequestListener,
             [REFETCH_CHATS]: refetchListener,
+            [ONLINE_USERS]: onlineUsersListener,
         };
 
         // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -111,6 +120,7 @@ const AppLayout = () => (WrappedComponent) => {
                                 chatId={chatId}
                                 handleDeleteChat={handleDeleteChat}
                                 newMessagesAlert={newMessagesAlert}
+                                onlineUsers={onlineUsers}
                             />
                         </Drawer>
                     )
@@ -132,6 +142,7 @@ const AppLayout = () => (WrappedComponent) => {
                                     chatId={chatId}
                                     handleDeleteChat={handleDeleteChat}
                                     newMessagesAlert={newMessagesAlert}
+                                    onlineUsers={onlineUsers}
                                 />
                             )
                         }
