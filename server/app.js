@@ -36,12 +36,17 @@ const adminSecretKey = process.env.ADMIN_SECRET_KEY || 'HAZIFUN';
 const userSocketIDs = new Map();
 const onlineUsers = new Set();
 
-connectDB(dbURI);
+console.log('dbName:', process.env.DATABASE_NAME.toString().trim());
+console.log('Cookie Name:', process.env.COOKIE);
+
+connectDB(dbURI, {
+    dbName: process.env.DATABASE_NAME.toString().trim()
+});
 
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME.toString().trim(),
+    api_key: process.env.CLOUDINARY_API_KEY.toString().trim(),
+    api_secret: process.env.CLOUDINARY_API_SECRET.toString().trim(),
 });
 
 // createSingleChats(10);
@@ -52,14 +57,14 @@ cloudinary.config({
 // createUser(10);
 
 const app = express();
-const server = createServer(app)
-const io = new Server(server, {cors: corsOptions});
-
-app.set('io', io);
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
+
+const server = createServer(app)
+const io = new Server(server, {cors: corsOptions});
+app.set('io', io);
 
 app.use('/api/v1/user', userRoute);
 app.use('/api/v1/chat', chatRoute);

@@ -11,7 +11,7 @@ import { ALERT, CHAT_JOINED, CHAT_LEFT, NEW_MESSAGE, START_TYPING, STOP_TYPING }
 import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api.js";
 import { useErrors, useSocketEvents } from "../hooks/hook.jsx";
 import { useInfiniteScrollTop } from "6pp";
-import { setIsFileMenu } from "../redux/reducers/misc.js";
+import { setIsFileMenu, setIsMobile } from "../redux/reducers/misc.js";
 import { useDispatch } from "react-redux";
 import { removeNewMessagesAlert } from "../redux/reducers/chat.js";
 import { TypingLoader } from "../components/layout/Loaders.jsx";
@@ -94,8 +94,10 @@ const Chat = ({ chatId, user }) => {
 
     useEffect(() => {
         // console.log('useEffect memebers', members);
+        // eslint-disable-next-line react/prop-types
         socket.emit(CHAT_JOINED, { userId: user?._id, members })
         dispatch(removeNewMessagesAlert(chatId));
+        dispatch(setIsMobile(false));
 
         return () => {
             setMessages([]);
@@ -103,6 +105,7 @@ const Chat = ({ chatId, user }) => {
             setPage(1);
             setOldMessages([]);
             // console.log('Cleanup members', members);
+            // eslint-disable-next-line react/prop-types
             socket.emit(CHAT_LEFT, { userId: user?._id, members })
         }
     }, [chatId, dispatch, setOldMessages, setPage, setMessages, setMessage, socket]);

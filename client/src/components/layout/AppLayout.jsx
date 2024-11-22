@@ -28,6 +28,7 @@ const AppLayout = () => (WrappedComponent) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const deleteMenuAnchor = useRef(null);
 
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const [onlineUsers, setOnlineUsers] = useState([]);
         const chatId = params.chatId;
 
@@ -127,7 +128,7 @@ const AppLayout = () => (WrappedComponent) => {
                 }
 
                 <Grid2 container height={"calc(100vh - 4rem)"}>
-                    <Grid2 size={{ sm: 3, md: 3}} sx={{
+                    <Grid2 size={{ sm: 4, md: 3}} sx={{
                         display: {
                             xs: 'none',
                             sm: 'block'
@@ -147,13 +148,13 @@ const AppLayout = () => (WrappedComponent) => {
                             )
                         }
                     </Grid2>
-                    <Grid2 size={{ xs: 12, sm: 6, md: 5, lg: 6}} height={"100%"} >
+                    <Grid2 size={{ xs: 12, sm: 8, md: 5, lg: 6}} height={"100%"} >
                         <WrappedComponent {...props} chatId={chatId} user={user} />
                     </Grid2>
-                    <Grid2 size={{ sm: 3, md: 4, lg: 3}} height={"100%"} sx={{
+                    <Grid2 size={{ md: 4, lg: 3}} height={"100%"} sx={{
                         display: {
-                            xs: 'none',
-                            sm: 'block'
+                            sm: 'none',
+                            md: 'block'
                         },
                         padding: '2rem',
                         bgcolor: 'rgba(0, 0, 0, 0.85)',

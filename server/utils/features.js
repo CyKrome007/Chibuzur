@@ -6,13 +6,13 @@ import {getBase64, getSockets} from "../lib/helper.js";
 
 const cookieOptions = {
     maxAge: 15 * 24 * 60 * 60 * 1000,
-    sameSite: false,
     httpOnly: true,
     secure: true,
+    sameSite: 'none',
 };
 
 const connectDB = (url) => {
-    mongoose.connect(url, { dbName: process.env.DATABASE_NAME})
+    mongoose.connect(url)
         .then((data) => console.log('Connected to db', data.connection.host))
         .catch((err) => {
             throw err;

@@ -1,5 +1,5 @@
 import {
-    AppBar, Backdrop, Badge, Box, IconButton,
+    AppBar, Avatar, Backdrop, Badge, Box, IconButton, Menu, MenuItem,
     Toolbar, Tooltip, Typography
 } from "@mui/material";
 
@@ -10,12 +10,13 @@ import {
     Search as SearchIcon,
     Logout as LogoutIcon,
     Notifications as NotificationsIcon,
+    Person as PersonIcon,
 } from "@mui/icons-material";
 
-import {orange} from "../../constants/color.js";
+import { orange } from "../../constants/color.js";
 
 import { useNavigate } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import {lazy, Suspense, useState} from "react";
 import axios from "axios";
 import { server } from "../../constants/config.js";
 import toast from "react-hot-toast";
@@ -35,7 +36,18 @@ const Header = () => {
     const dispatch = useDispatch();
 
     const { isSearch, isNotification, isNewGroup } = useSelector((state) => state['misc']);
+    const { user } = useSelector((state) => state['auth']);
     const { notificationCount } = useSelector((state) => state.chat);
+
+    const [anchorElUser, setAnchorElUser] = useState(null);
+
+    const handleOpenUserMenu = (event) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
 
     const handleMobile = (e) => {
         e.preventDefault();
@@ -44,21 +56,34 @@ const Header = () => {
 
     const openSearch = (e) => {
         e.preventDefault();
+        handleCloseUserMenu();
         dispatch(setIsSearch(true));
     }
 
     const openNewGroup = (e) => {
         e.preventDefault();
+        handleCloseUserMenu();
         dispatch(setIsNewGroup(true));
     }
 
     const openNotification = (e) => {
         e.preventDefault();
+        handleCloseUserMenu();
         dispatch(setIsNotification(true));
         dispatch(resetNotificationsCount())
     }
 
-    const navigateToGroups = () => navigate("/groups");
+    const navigateToGroups = () => {
+        handleCloseUserMenu();
+        navigate("/groups");
+    }
+
+    const openProfile = (e) => {
+        e.preventDefault();
+        handleCloseUserMenu();
+        console.log('User Profile');
+        alert('User Profile is Coming Soon!')
+    }
 
     const handleLogout = async () => {
         try{
@@ -73,6 +98,21 @@ const Header = () => {
             toast.error(e?.response?.data?.message || 'Something Went Wrong');
         }
     }
+
+    // const menuItems = {
+    //     {
+    //         onClick: openSearch,
+    //         title: 'Search',
+    //         icon: (<SeachIcon />),
+    //         text: 'Search Users',
+    //     },
+    //     {
+    //         onClick: openSearch,
+    //             title: 'Search',
+    //         icon: <SeachIcon />,
+    //         text: 'Search Users'
+    //     },
+    // };
 
     return (
         <>
@@ -113,11 +153,79 @@ const Header = () => {
                                 flexGrow: 1,
                             }}
                         />
-                        <IconBtn title={'Search'} icon={<SearchIcon />} onClick={openSearch} />
-                        <IconBtn title={'New Group'} icon={<AddIcon />} onClick={openNewGroup} />
-                        <IconBtn title={'Manage Groups'} icon={<GroupIcon />} onClick={navigateToGroups} />
-                        <IconBtn title={'Notifications'} icon={<NotificationsIcon />} value={notificationCount} onClick={openNotification} />
-                        <IconBtn title={'Logout'} icon={<LogoutIcon />} onClick={handleLogout} />
+                        <Box sx={{
+                            display: {
+                                xs: 'none',
+                                md: 'block'
+                            }
+                        }}>
+                            <IconBtn title={'Search'} icon={<SearchIcon />} onClick={openSearch} />
+                            <IconBtn title={'New Group'} icon={<AddIcon />} onClick={openNewGroup} />
+                            <IconBtn title={'Manage Groups'} icon={<GroupIcon />} onClick={navigateToGroups} />
+                            <IconBtn title={'Notifications'} icon={<NotificationsIcon />} value={notificationCount} onClick={openNotification} />
+                            {/*<IconBtn title={'Profile'} icon={<PersonIcon />} onClick={openProfile} />*/}
+                            <IconBtn title={'Logout'} icon={<LogoutIcon />} onClick={handleLogout} />
+                        </Box>
+                        <Box sx={{
+                            display: {
+                                xs: 'block',
+                                md: 'none'
+                            }
+                        }}>
+                            <Box sx={{ flexGrow: 0 }}>
+                                <Tooltip title="Open settings">
+                                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                        <Avatar alt={user?.name} src={user?.avatar.url} />
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    sx={{ mt: '45px' }}
+                                    id="menu-appbar"
+                                    anchorEl={anchorElUser}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorElUser)}
+                                    onClose={handleCloseUserMenu}
+                                >
+                                    {/*settings.map((setting) => (
+                                        <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                            <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                                        </MenuItem>
+                                    ))*/}
+                                    <MenuItem onClick={openSearch}>
+                                        <IconBtn title={'Search'} icon={<SearchIcon />} />
+                                        <Typography variant='body1' sx={{ paddingRight: '1rem'}}>Search Users</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={openNewGroup}>
+                                        <IconBtn title={'New Group'} icon={<AddIcon />} />
+                                        <Typography variant='body1' sx={{ paddingRight: '1rem'}}>New Group</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={navigateToGroups}>
+                                        <IconBtn title={'Manage Groups'} icon={<GroupIcon />} />
+                                        <Typography variant='body1' sx={{ paddingRight: '1rem'}}>Manage Groups</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={openNotification}>
+                                        <IconBtn title={'Notifications'} icon={<NotificationsIcon />} value={notificationCount} />
+                                        <Typography variant='body1' sx={{ paddingRight: '1rem'}}>Notifications</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={openProfile}>
+                                        <IconBtn title={'Profile'} icon={<PersonIcon />} />
+                                        <Typography variant='body1' sx={{ paddingRight: '1rem'}}>Profile</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleLogout}>
+                                        <IconBtn title={'Logout'} icon={<LogoutIcon />} />
+                                        <Typography variant='body1' sx={{ paddingRight: '1rem'}}>Logout</Typography>
+                                    </MenuItem>
+                                </Menu>
+                            </Box>
+                        </Box>
                     </Toolbar>
                 </AppBar>
             </Box>

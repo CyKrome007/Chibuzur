@@ -1,8 +1,14 @@
-import {Avatar, Skeleton, Stack, Typography} from "@mui/material";
-import {Face as FaceIcon, AlternateEmail as UsernameIcon, CalendarMonth as CalendarIcon} from "@mui/icons-material";
+import {Avatar, Box, Skeleton, Stack, Typography} from "@mui/material";
+import {
+    Face as FaceIcon,
+    AlternateEmail as UsernameIcon,
+    CalendarMonth as CalendarIcon,
+    InfoOutlined as BioIcon,
+} from "@mui/icons-material";
 import moment from "moment";
 import { transformImage } from "../../lib/features.js";
 import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
 
 export const Profile = () => {
 
@@ -21,27 +27,39 @@ export const Profile = () => {
                     }}
                     src={transformImage(user?.avatar?.url)}
                 />
-                <ProfileCard heading={'Name'} text={user?.name} Icon={<FaceIcon />} />
-                <ProfileCard heading={'Username'} text={user?.username} Icon={<UsernameIcon />} />
-                <ProfileCard heading={'Bio'} text={user?.bio} />
-                <ProfileCard heading={'Joined'} text={moment(user?.createdAt).fromNow()} Icon={<CalendarIcon />} />
+                <ProfileCard index={1} heading={'Name'} text={user?.name} Icon={<FaceIcon />} />
+                <ProfileCard index={2} heading={'Username'} text={user?.username} Icon={<UsernameIcon />} />
+                <ProfileCard index={3} heading={'Bio'} text={user?.bio} Icon={<BioIcon />}/>
+                <ProfileCard index={4} heading={'Joined'} text={moment(user?.createdAt).fromNow()} Icon={<CalendarIcon />} />
             </Stack>
         </>
     )
 }
 
-const ProfileCard = ({ text, Icon, heading }) => (
-    <Stack
-        direction='row'
-        alignItems={'center'}
-        spacing={'1rem'}
-        color={'white'}
-        textAlign='center'
-    >
-        {Icon && Icon}
-        <Stack>
-            <Typography variant='body1'>{text}</Typography>
-            <Typography variant='caption' color={'gray'}>{heading}</Typography>
-        </Stack>
-    </Stack>
+// eslint-disable-next-line react/prop-types
+const ProfileCard = ({ text, Icon, heading, index }) => (
+    <Box sx={{
+        width: '100%'
+    }}>
+        <motion.div
+            initial={{opacity: 0, y: '100%'}}
+            whileInView={{opacity: 1, y: '0'}}
+            transition={{delay: index * 0.1}}
+            alignItems={'center'}
+        >
+            <Stack
+                direction='row'
+                alignItems={'center'}
+                spacing={'1rem'}
+                color={'white'}
+                width={'100%'}
+            >
+                {Icon && Icon}
+                <Stack>
+                    <Typography variant='body1'>{text}</Typography>
+                    <Typography variant='caption' color={'gray'}>{heading}</Typography>
+                </Stack>
+            </Stack>
+        </motion.div>
+    </Box>
 )
