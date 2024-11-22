@@ -81,8 +81,7 @@ const Header = () => {
     const openProfile = (e) => {
         e.preventDefault();
         handleCloseUserMenu();
-        console.log('User Profile');
-        alert('User Profile is Coming Soon!')
+        navigate('/profile');
     }
 
     const handleLogout = async () => {
@@ -163,7 +162,6 @@ const Header = () => {
                             <IconBtn title={'New Group'} icon={<AddIcon />} onClick={openNewGroup} />
                             <IconBtn title={'Manage Groups'} icon={<GroupIcon />} onClick={navigateToGroups} />
                             <IconBtn title={'Notifications'} icon={<NotificationsIcon />} value={notificationCount} onClick={openNotification} />
-                            {/*<IconBtn title={'Profile'} icon={<PersonIcon />} onClick={openProfile} />*/}
                             <IconBtn title={'Logout'} icon={<LogoutIcon />} onClick={handleLogout} />
                         </Box>
                         <Box sx={{

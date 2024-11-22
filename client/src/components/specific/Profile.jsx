@@ -1,14 +1,16 @@
-import {Avatar, Box, Skeleton, Stack, Typography} from "@mui/material";
+import { Avatar, Box, Skeleton, Stack, Typography } from "@mui/material";
 import {
     Face as FaceIcon,
     AlternateEmail as UsernameIcon,
     CalendarMonth as CalendarIcon,
     InfoOutlined as BioIcon,
+    Edit as EditIcon,
 } from "@mui/icons-material";
 import moment from "moment";
 import { transformImage } from "../../lib/features.js";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 export const Profile = () => {
 
@@ -31,6 +33,19 @@ export const Profile = () => {
                 <ProfileCard index={2} heading={'Username'} text={user?.username} Icon={<UsernameIcon />} />
                 <ProfileCard index={3} heading={'Bio'} text={user?.bio} Icon={<BioIcon />}/>
                 <ProfileCard index={4} heading={'Joined'} text={moment(user?.createdAt).fromNow()} Icon={<CalendarIcon />} />
+                <Box flexDirection='column' flexGrow={1} />
+                <Link to={'/profile'}>
+                    <Stack
+                        direction='row'
+                        color={'white'}
+                        gap={1}
+                    >
+                        <EditIcon />
+                        <Typography variant='body1'>
+                            Edit Profile
+                        </Typography>
+                    </Stack>
+                </Link>
             </Stack>
         </>
     )

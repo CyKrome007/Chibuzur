@@ -14,6 +14,7 @@ const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Groups = lazy(() => import("./pages/Groups"));
+const EditProfile = lazy(() => import('./pages/EditProfile'));
 
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin.jsx"));
 const Dashboard = lazy(() => import("./pages/admin/Dashboard.jsx"));
@@ -50,6 +51,7 @@ const App = () => {
                             <Route path="/" element={<Home />} />
                             <Route path="/chat/:chatId" element={<Chat />} />
                             <Route path="/groups" element={<Groups />} />
+                            <Route path={'/profile'} element={<EditProfile />} />
                         </Route>
                         <Route
                             path="/auth"

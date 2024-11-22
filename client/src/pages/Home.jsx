@@ -1,6 +1,6 @@
 import AppLayout from "../components/layout/AppLayout.jsx";
-import {Box, Typography} from "@mui/material";
-import {gray} from "../constants/color.js";
+import { Box, Typography } from "@mui/material";
+import { gray } from "../constants/color.js";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const Home = () => {

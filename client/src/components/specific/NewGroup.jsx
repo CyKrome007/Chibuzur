@@ -11,9 +11,9 @@ import toast from "react-hot-toast";
 const NewGroup = () => {
 
     const dispatch = useDispatch();
-    const { isNewGroup } = useSelector((state) => state.misc);
+    const { isNewGroup } = useSelector((state) => state['misc']);
 
-    const {isError, isLoading, error, data} = useAvailableFriendsQuery();
+    const {isError, isLoading, error, data} = useAvailableFriendsQuery(undefined, undefined);
 
     const [newGroup, isLoadingNewGroup] = useAsyncMutation(useNewGroupMutation);
 

@@ -1,14 +1,14 @@
-import {Avatar, Button, Container, IconButton, Paper, Stack, TextField, Typography} from "@mui/material";
-import {useState} from "react";
-import {CameraAlt as CameraAltIcon} from "@mui/icons-material";
-import {VisuallyHiddenInput} from "../components/styles/StyledComponents.js";
-import {useFileHandler, useInputValidation} from "6pp";
-import {usernameValidator} from "../utils/validators.js";
-import {bgGradient} from "../constants/color.js";
+import { Avatar, Button, Container, IconButton, Paper, Stack, TextField, Typography } from "@mui/material";
+import { useState } from "react";
+import { CameraAlt as CameraAltIcon } from "@mui/icons-material";
+import { VisuallyHiddenInput } from "../components/styles/StyledComponents.js";
+import { useFileHandler, useInputValidation } from "6pp";
+import { usernameValidator } from "../utils/validators.js";
+import { bgGradient } from "../constants/color.js";
 import axios from "axios";
-import {server} from "../constants/config.js";
-import {useDispatch} from "react-redux";
-import {userExists} from "../redux/reducers/auth.js";
+import { server } from "../constants/config.js";
+import { useDispatch } from "react-redux";
+import { userExists } from "../redux/reducers/auth.js";
 import toast from "react-hot-toast";
 
 const Login = () => {
