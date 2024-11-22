@@ -44,7 +44,7 @@ const Search = () => {
     return (
         <>
             <Dialog open={isSearch} onClose={() => dispatch(setIsSearch(false))}>
-                <Stack direction="column" width={'25rem'} p={'2rem'}>
+                <Stack direction="column" width={'100%'} p={'2rem'}>
                     <DialogTitle textAlign="center">Find People</DialogTitle>
                     <TextField
                         label={''}

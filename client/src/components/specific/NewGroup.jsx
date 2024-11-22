@@ -1,11 +1,11 @@
-import {Button, Dialog, DialogTitle, Skeleton, Stack, TextField, Typography} from "@mui/material";
+import { Button, Dialog, DialogTitle, Skeleton, Stack, TextField, Typography } from "@mui/material";
 import UserItem from "../shared/UserItem.jsx";
 import { useInputValidation } from "6pp";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsNewGroup } from "../../redux/reducers/misc.js";
-import {useAvailableFriendsQuery, useNewGroupMutation} from "../../redux/api/api.js";
-import {useAsyncMutation, useErrors} from "../../hooks/hook.jsx";
+import { useAvailableFriendsQuery, useNewGroupMutation } from "../../redux/api/api.js";
+import { useAsyncMutation, useErrors } from "../../hooks/hook.jsx";
 import toast from "react-hot-toast";
 
 const NewGroup = () => {
@@ -62,14 +62,14 @@ const NewGroup = () => {
                         xs: '1rem',
                         sm: '2rem'
                     }}
-                    width={'25rem'}
+                    width={'100%'}
                     spacing={'2rem'}
                 >
                     <DialogTitle title='NewGroup' variant='h4'>New Group</DialogTitle>
 
                     <TextField label={'Group Name'} value={groupName.value} onChange={groupName.changeHandler}/>
 
-                    <Typography variant={'body1'}>Members</Typography>
+                    <Typography variant='body1'>Members</Typography>
 
                     <Stack>
                         {

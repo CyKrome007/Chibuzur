@@ -153,7 +153,7 @@ const AppLayout = () => (WrappedComponent) => {
                     </Grid2>
                     <Grid2 size={{ md: 4, lg: 3}} height={"100%"} sx={{
                         display: {
-                            sm: 'none',
+                            xs: 'none',
                             md: 'block'
                         },
                         padding: '2rem',
