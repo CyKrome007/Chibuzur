@@ -7,6 +7,10 @@
 /dataSources/
 /dataSources.local.xml
 
+/server/.sampleEnv
+/server/.env
+/client/.env
+
 # Logs
 logs
 *.log
